@@ -16,7 +16,7 @@ public class FracCalc {
         	System.out.println(ans);//print out the answer
         	System.out.println("Enter another mathematical expression or type \"quit\", if you want to quit.");
         	input = console.nextLine();//get the next input
-        } 
+        }
         console.close();
 
     }
