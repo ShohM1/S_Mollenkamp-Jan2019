@@ -13,29 +13,22 @@ public class Fraction {
     	}
     	operand = operand.replace("_"," ").replace("/"," ");//make it splittable
     	String[] splitFrac = operand.split(" ");//split into fractions
-    	int whole = 0;//set whole number
-    	int[] fract = new int[2];
     	for(int i=0; i<=2; i++) {
     		int inInt = Integer.parseInt(splitFrac[i]);//making string into int
-    		if(i==0) {
-    			whole = inInt;//store whole number
-    		} else {
-    			fract[i-1] = inInt;//store fractions
-    		}
+    		fraction[i] = inInt;//store fractions
     	}
-    	if(fract[0]<0 && whole!=0) {
-    		fract[0]=-fract[0];
-    		whole = -whole;
+    	if(fraction[1]<0 && fraction[0]!=0) {
+    		fraction[1] = -fraction[1];
+    		fraction[0] = -fraction[0];
     	}
-    	if(whole>0) {
-    		fract[0]+=whole*fract[1];//make it improper
-    	}else if(whole<0) {
-    		fract[0]= -fract[0]+whole*fract[1];//make it improper when negative
+    	if(fraction[0]>0) {
+    		fraction[1]+= fraction[0]*fraction[2];//make it improper
+    	}else if(fraction[0]<0) {
+    		fraction[1]= -fraction[1]+fraction[0]*fraction[2];//make it improper when negative
     	}
-    	fraction[0] = 0;
-    	fraction[1] = fract[0];
-    	fraction[2] = fract[1];
+    	fraction[0] = 0;//get rid of the whole value because it's already added on numerator
 	}
+	
 	public String toString (){
 		String answer = fraction[1]/fraction[2] + "_" + Math.abs(fraction[1]%fraction[2]) +"/" + fraction[2];//back into string with mixed
         if(fraction[1]%fraction[2]==0) {
@@ -45,6 +38,7 @@ public class Fraction {
         }
         return answer;
 	}
+	
 	public void operate(String operator, Fraction frac2) {
 		int[] answer = new int[3];
     	if(operator.equals("+")||operator.equals("-")) {//if it's + or -
@@ -71,6 +65,7 @@ public class Fraction {
     	answer[2]/=greatestCF;
     	fraction = answer;//set fraction reference to answer
 	}
+	
 	public static int gcf(int num1, int num2) {
 		//finds greatest common factor by checking the divisibility of both values
 		num1= Math.abs(num1);
@@ -84,25 +79,4 @@ public class Fraction {
 		}
 		return divisor;
     }
-	
-	
-	public int getWhole() {
-		return fraction[0];
-	}
-	public int getNum() {
-		return fraction[1];
-	}
-	public int getDenom() {
-		return fraction[2];
-	}
-	public void setWhole(int num) {
-		fraction[0] = num;
-	}
-	public void setNum(int num) {
-		fraction[1] = num;
-	}
-	public void setDenom(int num) {
-		fraction[2] = num;
-	}
-	
 }

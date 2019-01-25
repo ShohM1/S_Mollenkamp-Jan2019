@@ -18,11 +18,13 @@ public class FracCalc {
         	input = console.nextLine();//get the next input
         }
         console.close();
-
     }
     
     public static String produceAnswer(String input)
     { 
+    	if(input.contains("/0")){
+    		return "ERROR: Cannot divide by zero.";//check if dividing by 0
+    	}
     	String[] separation = input.split(" ");//split between operands and operators
     	for(int i=0; i<(separation.length-1)/2; i++) {
     		int calcNow = 1;//what to calculate
@@ -53,8 +55,8 @@ public class FracCalc {
     		}
     		Fraction op1 = new Fraction(toCalculate[0]);//put in values of first fraction
     		Fraction op2 = new Fraction(toCalculate[2]);//put in values of second fraction
-    		op1.operate(toCalculate[1], op2);
-    		String answer1 = op1.toString();
+    		op1.operate(toCalculate[1], op2);//do the math
+    		String answer1 = op1.toString();//get the answer
     		for(int k=0; k<separation.length; k++) {//move around the values in the array
     			separation[k] = separation[k];
     			if(k==calcNow-1) {
@@ -68,7 +70,4 @@ public class FracCalc {
     	}
     	return separation[0];
     }
-
-   
-    
 }
