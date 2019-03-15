@@ -7,10 +7,9 @@ public class SpreadsheetLocation implements Location
 	private int column;
 	private int row; 
 	
-	public SpreadsheetLocation(String cellName)
-    {
+	public SpreadsheetLocation(String cellName){
         column = cellName.toUpperCase().charAt(0)-65;
-        row = Integer.parseInt(cellName.substring(1))-1;
+        row = Integer.parseInt(cellName.substring(1).replace(" ", ""))-1;
     }
 
     @Override
