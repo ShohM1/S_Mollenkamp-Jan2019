@@ -20,6 +20,7 @@ public class TextExcel
         	input = console.nextLine();//get the next input
         	
         }
+        
         console.close();// Add your command loop here
 	}
 

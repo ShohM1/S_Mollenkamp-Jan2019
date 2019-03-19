@@ -20,11 +20,19 @@ public class Spreadsheet implements Grid
 		if(command.length()==2||command.length()==3) {//for <cell>
 			SpreadsheetLocation loc = new SpreadsheetLocation(command);
 			toReturn = sheet[loc.getRow()][loc.getCol()].fullCellText();
-		}else if(command.split(" ").length >= 3) {// for <cell> = ""
+		}else if(command.split(" ").length >= 3) {
 			SpreadsheetLocation loc = new SpreadsheetLocation(command.substring(0,3));
-			sheet[loc.getRow()][loc.getCol()] = new TextCell(command.substring(5));
+			if(command.contains("\"")) {// for <cell> = ""
+				sheet[loc.getRow()][loc.getCol()] = new TextCell(command.substring(5));
+			}else if(command.contains("%")) {
+				sheet[loc.getRow()][loc.getCol()] = new PercentCell(command.substring(5));
+			}else if(command.contains("(")) {
+				sheet[loc.getRow()][loc.getCol()] = new FormulaCell(command.substring(5));
+			}else {
+				sheet[loc.getRow()][loc.getCol()] = new ValueCell(command.substring(5));
+			}
 			toReturn = getGridText();
-		}else if(command.equals("clear")) {//for clear
+		}else if(command.toLowerCase().equals("clear")) {//for clear
 			for(int i=0; i <sheet.length; i++) {
 				for(int j=0; j<sheet[0].length; j++) {
 					sheet[i][j]= new EmptyCell();
@@ -72,7 +80,7 @@ public class Spreadsheet implements Grid
 			for(int j=0; j<sheet[0].length; j++) {
 				gridText+=(sheet[i][j].abbreviatedCellText() + "          ").substring(0,10) + "|";
 			}
-			gridText+="\n";
+				gridText+="\n";
 		}
 		
 		return gridText ;
