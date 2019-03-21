@@ -1,10 +1,35 @@
 package textExcel;
 
 public class FormulaCell extends RealCell {
-	public FormulaCell(String command) {
+	private Cell[][] sheet;
+	public FormulaCell(String command, Cell[][] grid) {
 		super(command);
+		sheet = grid;
 	}
 	public double getDoubleValue() {
+		double sum=0;
+		int count = 0;
+		if(super.fullCellText().toUpperCase().contains("SUM")) {
+			for(char c = super.fullCellText().toUpperCase().charAt(6); c <= super.fullCellText().toUpperCase().charAt(super.fullCellText().indexOf("-")+1);c++) {
+				//find the alphabet by taking the char after "( AVG " then go until the char value of the alphabet after "-"
+				for(int i = Integer.parseInt(super.fullCellText().substring(7, super.fullCellText().indexOf("-"))); i <= Integer.parseInt(super.fullCellText().substring(super.fullCellText().indexOf("-")+2, super.fullCellText().indexOf(")")-1));i++) {
+					//Get the int value by taking the value after char to number before "-" and go to the value after "-" and char to before " )"
+					sum+=Double.parseDouble(sheet[c-65][i].abbreviatedCellText());
+				}
+			}
+			return sum;
+		}
+		if(super.fullCellText().toUpperCase().contains("AVG")) {
+			for(char c = super.fullCellText().charAt(6); c <= super.fullCellText().charAt(super.fullCellText().indexOf("-")+1);c++) {
+				//find the alphabet by taking the char after "( AVG " then go until the char value of the alphabet after "-"
+				for(int i = Integer.parseInt(super.fullCellText().substring(7, super.fullCellText().indexOf("-"))); i <= Integer.parseInt(super.fullCellText().substring(super.fullCellText().indexOf("-")+2, super.fullCellText().indexOf(")")-1));i++) {
+					//Get the int value by taking the value after char to number before "-" and go to the value after "-" and char to before " )"
+					sum+=Double.parseDouble(sheet[c-65][i].abbreviatedCellText());
+					count++;
+				}
+			}
+			return sum/count;
+		}
 		String[] separation = super.fullCellText().replace("( ", "").replace(" )", "" ).split(" ");//split between operands and operators
 		for(int i=0; i<(separation.length-1)/2; i++) {
     		int calcNow = 1;//what to calculate
@@ -15,11 +40,11 @@ public class FormulaCell extends RealCell {
     		//	}
     		//}
     		String[] toCalculate = {separation[calcNow-1], separation[calcNow], separation[calcNow+1]};
-    		for(String s: toCalculate) {
+    		for(int j=0; j<3; j+=2) {
     			for(char c = 'A';c<'M';c++) {
-    				if(s.contains(c+"")) {
-    					SpreadsheetLocation loc = new SpreadsheetLocation(s);
-    					s = Spreadsheet.getCell(loc).abbreviatedCellText();
+    				if(toCalculate[j].contains("" + c)) {
+    					SpreadsheetLocation loc = new SpreadsheetLocation(toCalculate[j]);
+    					toCalculate[j] = sheet[loc.getRow()][loc.getCol()].abbreviatedCellText();
     				}
     			}
     		}

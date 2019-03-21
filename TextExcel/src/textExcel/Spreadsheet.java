@@ -27,7 +27,7 @@ public class Spreadsheet implements Grid
 			}else if(command.contains("%")) {
 				sheet[loc.getRow()][loc.getCol()] = new PercentCell(command.substring(5));
 			}else if(command.contains("(")) {
-				sheet[loc.getRow()][loc.getCol()] = new FormulaCell(command.substring(5));
+				sheet[loc.getRow()][loc.getCol()] = new FormulaCell(command.substring(5), sheet);
 			}else {
 				sheet[loc.getRow()][loc.getCol()] = new ValueCell(command.substring(5));
 			}
