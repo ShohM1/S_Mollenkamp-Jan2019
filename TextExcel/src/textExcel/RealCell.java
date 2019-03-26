@@ -1,3 +1,5 @@
+//@author Shoh Mollenkamp
+//@version March 2019
 package textExcel;
 
 public class RealCell implements Cell {
