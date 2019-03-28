@@ -41,9 +41,13 @@ public class Spreadsheet implements Grid
 				}
 			}
 			toReturn = getGridText();
-		} else if(command.split(" ").length == 2) {//for clear <cell>
-			SpreadsheetLocation loc = new SpreadsheetLocation(command.substring(6));
-			sheet[loc.getRow()][loc.getCol()] = new EmptyCell();
+		} else if(command.split(" ").length == 2) {
+			if(command.toLowerCase().contains("clear")) {//for clear <cell>
+				SpreadsheetLocation loc = new SpreadsheetLocation(command.substring(6));
+				sheet[loc.getRow()][loc.getCol()] = new EmptyCell();
+			}else {
+				sort(command);
+			}
 			toReturn = getGridText();
 		}
 		return toReturn;
@@ -89,35 +93,77 @@ public class Spreadsheet implements Grid
 		
 	}
 	public void sort (String command) {
-		Cell[] toSort = new Cell[(command.toUpperCase().charAt(command.indexOf("-")+1)-command.toUpperCase().charAt(6)+1)*(Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()-1))-Integer.parseInt(command.substring(7, command.indexOf("-")))+1)];
+		Cell[] toSort = new Cell[(command.toUpperCase().charAt(command.indexOf("-")+1)-command.toUpperCase().charAt(6)+1)*(Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()))-Integer.parseInt(command.substring(7, command.indexOf("-")))+1)];
 		int count = 0;
 		Cell[] sorted = new Cell[toSort.length];
+		RealCell[] toSortReal = new RealCell[toSort.length];
+		RealCell[] sortedReal = new RealCell[toSort.length];
+		boolean realCell=false;
 		//get the difference in char values and int values add one on each to include the end and multiple them to get the number of cells that has to be made
 		for(char c = command.toUpperCase().charAt(6); c <= command.toUpperCase().charAt(command.indexOf("-")+1);c++) {
 			//find the alphabet by taking the char after "sort? " then go until the char value of the alphabet after "-"
-			for(int i = Integer.parseInt(command.substring(7, command.indexOf("-"))); i <= Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()-1));i++) {
+			for(int i = Integer.parseInt(command.substring(7, command.indexOf("-"))); i <= Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()));i++) {
 				//Get the int value by taking the value after char to number before "-" and go to the value at the end
 				Location tempLoc = new SpreadsheetLocation(c + "" + i );
+				if(sheet[tempLoc.getRow()][tempLoc.getCol()] instanceof RealCell)
 				toSort[count]=sheet[tempLoc.getRow()][tempLoc.getCol()];
+				if(sheet[tempLoc.getRow()][tempLoc.getCol()] instanceof RealCell)
+					realCell = true;
+				count++;
 			}
 		}
-		for(int i=0; i<toSort.length;i++) {//to moving along toSort array
-			for(int j = 0; j<i; j++) {//to move along sorted array
-				for(int k = 0; k<toSort[i].fullCellText().length();k++) {//to move along toSort chars
-					if(k>sorted[j].fullCellText().length()) {//to see the char exists for that location 
-						if(toSort[i].fullCellText().toUpperCase().charAt(k)<sorted[j].fullCellText().toUpperCase().charAt(k)) { //comparing chars
-							for(int l = i; l>j;l--) {//to move around the values in array to the right
-								sorted[l]=sorted[l-1];
+		if(!realCell) {
+			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
+				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
+				for(int j = 0; j<i; j++) {//to move along sorted array
+					for(int k = 0; k<toSort[i].fullCellText().length();k++) {//to move along toSort chars
+						if(k<sorted[j].fullCellText().length()) {//to see if the char exists for that location 
+							if(toSort[i].fullCellText().toUpperCase().charAt(k)<sorted[j].fullCellText().toUpperCase().charAt(k)) { //comparing chars
+								for(int l = i; l>j;l--) {//to move around the values in array to the right
+									sorted[l]=sorted[l-1];
+								}
+								sorted[j]=toSort[i];//replace the value
+								j+=i+1;//end the loop as placing the value is complete. 
+								break;
+							}else if(toSort[i].fullCellText().toUpperCase().charAt(k)>sorted[j].fullCellText().toUpperCase().charAt(k)) {//later char
+								break; //the value is larger, so it would be later
 							}
-							sorted[j]=toSort[i];//replace the value
-							k += toSort[i].fullCellText().length();//end the loop. NOT USING BREAK!
-						}else if(toSort[i].fullCellText().toUpperCase().charAt(k)>sorted[j].fullCellText().toUpperCase().charAt(k)) {//later char
-							k += toSort[i].fullCellText().length();//end the loop. NOT USING BREAK!
+						}else {
+							break;
 						}
-					}else {
-						k += toSort[i].fullCellText().length();//end the loop. NOT USING BREAK!
+					}
+				}	
+			}
+		}else {
+			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
+				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
+				for(int j = 0; j<i; j++) {//to move along sorted array
+					if(Double.parseDouble(toSort[i].fullCellText())<Double.parseDouble(sorted[i].fullCellText())) { //comparing chars
+						for(int k = i; k>j;k--) {//to move around the values in array to the right
+							sorted[k]=sorted[k-1];
+						}
+						sorted[j]=toSort[i];//replace the value
+						j+=i+1;//end the loop as placing the value is complete. 
+						break;
+					}else if(Double.parseDouble(toSort[i].fullCellText())>Double.parseDouble(sorted[i].fullCellText())) {//later char
+						break; //the value is larger, so it would be later
 					}
 				}
+			}	
+		}
+		count=0;//reset count
+		if(command.toUpperCase().substring(4,5).equals("D")) 
+			count = toSort.length-1;
+		for(int i = Integer.parseInt(command.substring(7, command.indexOf("-"))); i <= Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()));i++) {
+			//Get the int value by taking the value after char to number before "-" and go to the value at the end
+			for(char c = command.toUpperCase().charAt(6); c <= command.toUpperCase().charAt(command.indexOf("-")+1);c++) {
+				//find the alphabet by taking the char after "sort? " then go until the char value of the alphabet after "-"
+				Location tempLoc = new SpreadsheetLocation(c + "" + i );
+				sheet[tempLoc.getRow()][tempLoc.getCol()]=sorted[count];
+				if(command.toUpperCase().substring(4,5).equals("D")) 
+					count--;
+				else
+					count++;
 			}
 		}
 	}
