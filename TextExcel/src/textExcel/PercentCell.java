@@ -1,3 +1,6 @@
+//@author Shoh Mollenkamp
+//@version March 2019
+//This class deals with percents
 package textExcel;
 
 public class PercentCell extends RealCell {
@@ -12,7 +15,7 @@ public class PercentCell extends RealCell {
 		return getDoubleValue()+"";
 	}
 	public String abbreviatedCellText() {
-		return (((int) (getDoubleValue() * 100) + "%")  + "          ").substring(0, 10);
+		return (((int) (getDoubleValue() * 100) + "%")  + "          ").substring(0, 10);//convert it back into %
 	}
 
 }

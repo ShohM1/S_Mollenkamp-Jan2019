@@ -1,52 +1,51 @@
 //@author Shoh Mollenkamp
 //@version March 2019
+//This class takes the command and change the spreadsheet and store it
 package textExcel;
 import java.util.ArrayList;
 // Update this file with your own code.
 
-public class Spreadsheet implements Grid
-{
-//constructor
-	private Cell[][] sheet;
-	public Spreadsheet() {
+public class Spreadsheet implements Grid{
+	private Cell[][] sheet;//create the spreadsheet
+	public Spreadsheet() {//constructor
 		sheet = new Cell[20][12];//initialize a 2D array of Cells
 		for(int i=0; i <sheet.length; i++) {
 			for(int j=0; j<sheet[0].length; j++) {
-				sheet[i][j]= new EmptyCell();
+				sheet[i][j]= new EmptyCell();//make everything emptyCell for now
 			}
 		}
 	}
 	@Override
 	public String processCommand(String command){
-		String toReturn = "";
+		String toReturn = "";//this is what will be returned
 		if(command.length()==2||command.length()==3) {//for <cell>
 			SpreadsheetLocation loc = new SpreadsheetLocation(command);
-			toReturn = sheet[loc.getRow()][loc.getCol()].fullCellText();
+			toReturn = sheet[loc.getRow()][loc.getCol()].fullCellText();//return value for that location
 		}else if(command.split(" ").length >= 3) {
 			SpreadsheetLocation loc = new SpreadsheetLocation(command.substring(0,3));
 			if(command.contains("\"")) {// for <cell> = ""
 				sheet[loc.getRow()][loc.getCol()] = new TextCell(command.substring(5));
-			}else if(command.contains("%")) {
+			}else if(command.contains("%")) {//for percent cell
 				sheet[loc.getRow()][loc.getCol()] = new PercentCell(command.substring(5));
-			}else if(command.contains("(")) {
+			}else if(command.contains("(")) {//for formula containing parentheses
 				sheet[loc.getRow()][loc.getCol()] = new FormulaCell(command.substring(5), sheet);
-			}else {
+			}else {//for the one with just number
 				sheet[loc.getRow()][loc.getCol()] = new ValueCell(command.substring(5));
 			}
-			toReturn = getGridText();
+			toReturn = getGridText();//return grid text for these
 		}else if(command.toLowerCase().equals("clear")) {//for clear
 			for(int i=0; i <sheet.length; i++) {
 				for(int j=0; j<sheet[0].length; j++) {
-					sheet[i][j]= new EmptyCell();
+					sheet[i][j]= new EmptyCell();//make everything empty again
 				}
 			}
 			toReturn = getGridText();
 		} else if(command.split(" ").length == 2) {
 			if(command.toLowerCase().contains("clear")) {//for clear <cell>
 				SpreadsheetLocation loc = new SpreadsheetLocation(command.substring(6));
-				sheet[loc.getRow()][loc.getCol()] = new EmptyCell();
+				sheet[loc.getRow()][loc.getCol()] = new EmptyCell();//make the particular cell empty
 			}else {
-				sort(command);
+				sort(command);//for sort
 			}
 			toReturn = getGridText();
 		}
@@ -92,12 +91,10 @@ public class Spreadsheet implements Grid
 		return gridText ;
 		
 	}
-	public void sort (String command) {
+	public void sort (String command) {//modification required
 		Cell[] toSort = new Cell[(command.toUpperCase().charAt(command.indexOf("-")+1)-command.toUpperCase().charAt(6)+1)*(Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()))-Integer.parseInt(command.substring(7, command.indexOf("-")))+1)];
 		int count = 0;
 		Cell[] sorted = new Cell[toSort.length];
-		RealCell[] toSortReal = new RealCell[toSort.length];
-		RealCell[] sortedReal = new RealCell[toSort.length];
 		boolean realCell=false;
 		//get the difference in char values and int values add one on each to include the end and multiple them to get the number of cells that has to be made
 		for(char c = command.toUpperCase().charAt(6); c <= command.toUpperCase().charAt(command.indexOf("-")+1);c++) {
@@ -105,8 +102,7 @@ public class Spreadsheet implements Grid
 			for(int i = Integer.parseInt(command.substring(7, command.indexOf("-"))); i <= Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()));i++) {
 				//Get the int value by taking the value after char to number before "-" and go to the value at the end
 				Location tempLoc = new SpreadsheetLocation(c + "" + i );
-				if(sheet[tempLoc.getRow()][tempLoc.getCol()] instanceof RealCell)
-				toSort[count]=sheet[tempLoc.getRow()][tempLoc.getCol()];
+				toSort[count]=sheet[tempLoc.getRow()][tempLoc.getCol()];//switching these
 				if(sheet[tempLoc.getRow()][tempLoc.getCol()] instanceof RealCell)
 					realCell = true;
 				count++;
@@ -114,7 +110,7 @@ public class Spreadsheet implements Grid
 		}
 		if(!realCell) {
 			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
-				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
+				sorted[i]=toSort[i]; //place the values for now
 				for(int j = 0; j<i; j++) {//to move along sorted array
 					for(int k = 0; k<toSort[i].fullCellText().length();k++) {//to move along toSort chars
 						if(k<sorted[j].fullCellText().length()) {//to see if the char exists for that location 
@@ -138,14 +134,14 @@ public class Spreadsheet implements Grid
 			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
 				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
 				for(int j = 0; j<i; j++) {//to move along sorted array
-					if(Double.parseDouble(toSort[i].fullCellText())<Double.parseDouble(sorted[i].fullCellText())) { //comparing chars
+					if(((RealCell) toSort[i]).getDoubleValue()<((RealCell)sorted[i]).getDoubleValue()) { //comparing chars
 						for(int k = i; k>j;k--) {//to move around the values in array to the right
 							sorted[k]=sorted[k-1];
 						}
 						sorted[j]=toSort[i];//replace the value
 						j+=i+1;//end the loop as placing the value is complete. 
 						break;
-					}else if(Double.parseDouble(toSort[i].fullCellText())>Double.parseDouble(sorted[i].fullCellText())) {//later char
+					}else if(((RealCell) toSort[i]).getDoubleValue()>((RealCell)sorted[i]).getDoubleValue()) {//later char
 						break; //the value is larger, so it would be later
 					}
 				}

@@ -1,10 +1,11 @@
 //@author Shoh Mollenkamp
 //@version March 2019
+//This class gets 
 package textExcel;
 
 public class RealCell implements Cell {
 	private String value;
-	public RealCell(String command) {
+	public RealCell(String command) {//construct
 		if(command.charAt(0)==' ')
 			command=command.substring(1);
 		value = command;
@@ -16,7 +17,7 @@ public class RealCell implements Cell {
 		return (getDoubleValue() + "          ").substring(0, 10);
 	}
 	public double getDoubleValue(){
-		return Double.parseDouble(value);
+		return Double.parseDouble(value);//Turn string into double
 	}
 	
 

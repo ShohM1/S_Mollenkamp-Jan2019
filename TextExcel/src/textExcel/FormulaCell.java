@@ -45,9 +45,9 @@ public class FormulaCell extends RealCell {
     		//}
     		String[] toCalculate = {separation[calcNow-1], separation[calcNow], separation[calcNow+1]};
     		for(int j=0; j<3; j+=2) {
-    			for(char c = 'A';c<'M';c++) {
+    			for(char c = 'A';c<'M';c++) {//checking for cell
     				if(toCalculate[j].toUpperCase().contains("" + c)) {
-    					SpreadsheetLocation loc = new SpreadsheetLocation(toCalculate[j]);
+    					SpreadsheetLocation loc = new SpreadsheetLocation(toCalculate[j]);//get the cell value
     					toCalculate[j] = sheet[loc.getRow()][loc.getCol()].abbreviatedCellText();
     				}
     			}
