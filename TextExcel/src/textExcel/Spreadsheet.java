@@ -3,7 +3,6 @@
 //This class takes the command and change the spreadsheet and store it
 package textExcel;
 import java.util.ArrayList;
-// Update this file with your own code.
 
 public class Spreadsheet implements Grid{
 	private Cell[][] sheet;//create the spreadsheet
@@ -102,7 +101,7 @@ public class Spreadsheet implements Grid{
 			for(int i = Integer.parseInt(command.substring(7, command.indexOf("-"))); i <= Integer.parseInt(command.substring(command.indexOf("-")+2, command.length()));i++) {
 				//Get the int value by taking the value after char to number before "-" and go to the value at the end
 				Location tempLoc = new SpreadsheetLocation(c + "" + i );
-				toSort[count]=sheet[tempLoc.getRow()][tempLoc.getCol()];//switching these
+				toSort[count]=sheet[tempLoc.getRow()][tempLoc.getCol()];
 				if(sheet[tempLoc.getRow()][tempLoc.getCol()] instanceof RealCell)
 					realCell = true;
 				count++;
@@ -110,7 +109,7 @@ public class Spreadsheet implements Grid{
 		}
 		if(!realCell) {
 			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
-				sorted[i]=toSort[i]; //place the values for now
+				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
 				for(int j = 0; j<i; j++) {//to move along sorted array
 					for(int k = 0; k<toSort[i].fullCellText().length();k++) {//to move along toSort chars
 						if(k<sorted[j].fullCellText().length()) {//to see if the char exists for that location 
@@ -134,15 +133,13 @@ public class Spreadsheet implements Grid{
 			for(int i=0; i<toSort.length;i++) {//to moving along toSort array
 				sorted[i]=toSort[i]; //place the value to be at the after all the values for now
 				for(int j = 0; j<i; j++) {//to move along sorted array
-					if(((RealCell) toSort[i]).getDoubleValue()<((RealCell)sorted[i]).getDoubleValue()) { //comparing chars
+					if(Double.parseDouble(toSort[i].fullCellText())<Double.parseDouble(sorted[i].fullCellText())) { //comparing chars
 						for(int k = i; k>j;k--) {//to move around the values in array to the right
 							sorted[k]=sorted[k-1];
 						}
 						sorted[j]=toSort[i];//replace the value
 						j+=i+1;//end the loop as placing the value is complete. 
 						break;
-					}else if(((RealCell) toSort[i]).getDoubleValue()>((RealCell)sorted[i]).getDoubleValue()) {//later char
-						break; //the value is larger, so it would be later
 					}
 				}
 			}	
@@ -163,6 +160,5 @@ public class Spreadsheet implements Grid{
 			}
 		}
 	}
-	//For sort make an array of an appropriate size and put each value in as it checks if it would be later or not
-
 }
+	//For sort make an array of an appropriate size and put each value in as it checks if it would be later or not

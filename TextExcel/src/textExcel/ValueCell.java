@@ -6,8 +6,4 @@ public class ValueCell extends RealCell {//constructor
 	public ValueCell(String command) {
 		super(command);
 	}
-	public double getDoubleValue(){
-		return super.getDoubleValue();
-	}
-
 }
